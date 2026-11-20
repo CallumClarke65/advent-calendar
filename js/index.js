@@ -30,7 +30,8 @@
     'img/IMG_5125.jpg',
     'img/IMG_5137.jpg',
     'img/IMG_5140.webp',
-    'img/IMG_5149.jpg'
+    'img/IMG_5149.jpg',
+    'img/rudolph.jpg'
   ];
 
   // ---------------------------------------------------------------------------
@@ -122,7 +123,7 @@
     el.progressText = document.getElementById('progressText');
     el.progressTrack = document.getElementById('progressTrack');
     el.status = document.getElementById('status');
-    el.qrImage = document.getElementById('qrImage');
+    el.spotifyButton = document.getElementById('spotifyButton');
 
     frontImage = el.rouletteImage;
     backImage = el.rouletteImageNext;
@@ -474,9 +475,9 @@
     var rawId = String(SONGS[selectedDay - 1] || '').trim();
     var url = spotifyUrl(rawId);
 
-    el.resultArea.setAttribute('aria-label', 'QR code for day ' + selectedDay);
-    el.qrImage.src = qrUrl(url);
-    el.qrImage.alt = 'QR code linking to ' + url + ' for day ' + selectedDay;
+    el.resultArea.setAttribute('aria-label', 'Spotify link for day ' + selectedDay);
+    el.spotifyButton.href = url;
+    el.spotifyButton.setAttribute('aria-label', 'Open day ' + selectedDay + "'s song in Spotify");
 
     document.body.classList.add('state-result');
     el.loadingArea.hidden = true;
@@ -492,8 +493,4 @@
     return 'https://open.spotify.com/track/' + encodeURIComponent(id);
   }
 
-  function qrUrl(url) {
-    return 'https://api.qrserver.com/v1/create-qr-code/?size=320x320&ecc=M&margin=12&data=' +
-      encodeURIComponent(url);
-  }
 }());
