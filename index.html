@@ -1,0 +1,438 @@
+---
+layout: none
+title: "Christmas Music"
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Christmas Music</title>
+  <style>
+    :root {
+      --red: #8b0016;
+      --green: #124b34;
+      --gold: #c9a227;
+      --cream: #fff9ec;
+      --ink: #3a2a1c;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    html, body { height: 100%; }
+
+    body {
+      height: 100vh;
+      height: 100dvh;
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255, 255, 255, .09) 0 2px, transparent 3px) 0 0 / 80px 80px,
+        repeating-linear-gradient(135deg, rgba(255, 255, 255, .018) 0 16px, transparent 16px 32px),
+        linear-gradient(160deg, #164a37 0%, #0b2b21 48%, #4a0712 100%);
+      animation: backgroundShift 22s ease-in-out infinite alternate;
+    }
+
+    /* Snow and day-specific characters */
+    .snow,
+    .decorations {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .snow { z-index: 1; }
+    .decorations { z-index: 4; }
+
+    .flake {
+      position: absolute;
+      top: -12%;
+      color: #fff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, .7);
+      animation: snowfall var(--duration) linear var(--delay) infinite;
+      opacity: .7;
+    }
+
+    .decor {
+      position: absolute;
+      font-size: clamp(1.5rem, 6vw, 2.6rem);
+      line-height: 1;
+      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .4));
+      animation: decorBob var(--duration) ease-in-out var(--delay) infinite alternate;
+    }
+
+    /* Subtle string lights */
+    .light-strand {
+      position: fixed;
+      left: -2%;
+      right: -2%;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .light-strand.top { top: 0; }
+    .light-strand.bottom { bottom: 0; transform: rotate(180deg); }
+
+    .light-strand::before {
+      content: "";
+      position: absolute;
+      top: 5px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #1c3327;
+    }
+
+    .bulb {
+      position: relative;
+      width: 10px;
+      height: 14px;
+      margin-top: 6px;
+      border-radius: 2px 2px 7px 7px;
+      background: var(--bulb);
+      box-shadow: 0 0 8px 2px var(--bulb);
+      animation: bulbGlow var(--speed) ease-in-out var(--delay) infinite alternate;
+    }
+
+    .bulb::before {
+      content: "";
+      position: absolute;
+      top: -6px;
+      left: 3px;
+      width: 3px;
+      height: 7px;
+      background: #1c3327;
+    }
+
+    /* Main card — sized to stay fully on screen */
+    .wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 860px;
+      max-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel {
+      width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+      padding: clamp(14px, 3vw, 34px);
+      text-align: center;
+      color: var(--ink);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #fffdf6 0%, #f6e9cf 100%);
+      box-shadow:
+        0 0 0 5px #fffdf6,
+        0 0 0 6px var(--gold),
+        0 0 0 10px var(--green),
+        0 18px 36px rgba(0, 0, 0, .5),
+        inset 0 0 0 4px rgba(139, 0, 22, .1);
+    }
+
+    .kicker {
+      margin: 0;
+      color: var(--red);
+      font-size: clamp(1.65rem, 5.5vw, 2.8rem);
+      font-weight: normal;
+      font-variant: small-caps;
+      letter-spacing: .1em;
+      line-height: 1.15;
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0 4px;
+      color: var(--green);
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .ornament::before,
+    .ornament::after {
+      content: "";
+      width: clamp(20px, 8vw, 64px);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .ornament::after { transform: scaleX(-1); }
+    .ornament span { color: var(--gold); }
+
+    h1#date {
+      margin: 12px 0 8px;
+      color: var(--green);
+      font-size: clamp(1.15rem, 4vw, 1.9rem);
+      font-weight: normal;
+      line-height: 1.3;
+    }
+
+    .unavailable {
+      margin: 14px auto 2px;
+      padding: 12px 14px;
+      max-width: 34rem;
+      color: var(--red);
+      border-top: 1px solid var(--gold);
+      border-bottom: 1px solid var(--gold);
+      font-size: 1rem;
+      font-style: italic;
+    }
+
+    /* Loading roulette — crossfades, no swipe */
+    .roulette {
+      position: relative;
+      width: min(230px, 56vw, 30vh);
+      margin: 14px auto 10px;
+      padding: 7px;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      background: #1b1410;
+      box-shadow:
+        0 0 0 4px #fffdf6,
+        0 0 0 5px var(--green),
+        0 10px 22px rgba(0, 0, 0, .4);
+    }
+
+    .badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      z-index: 4;
+      transform: translateX(-50%);
+      padding: 4px 12px;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      background: var(--red);
+      color: #fff;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      animation: gentlePulse 2.6s ease-in-out infinite;
+    }
+
+    .reel-window {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3 / 4;
+      border-radius: 4px;
+      background: #120d0a;
+    }
+
+    .reel-window img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity .6s ease;
+      filter: saturate(1.05);
+    }
+
+    .reel-window img.front,
+    .reel-window img.fade-in { opacity: 1; }
+    .reel-window img.fade-out { opacity: 0; }
+
+    .reel-window::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, .45);
+    }
+
+    .filmstrip {
+      display: flex;
+      gap: 5px;
+      max-width: 100%;
+      margin: 0 auto 12px;
+      padding: 4px 2px;
+      overflow-x: auto;
+    }
+
+    .filmstrip img {
+      flex: 0 0 auto;
+      width: 32px;
+      height: 44px;
+      object-fit: cover;
+      border: 2px solid #fffdf6;
+      border-radius: 2px;
+      opacity: .42;
+      filter: saturate(.6);
+      transition: transform .4s ease, opacity .4s ease, box-shadow .4s ease;
+    }
+
+    .filmstrip img.active {
+      transform: scale(1.14);
+      opacity: 1;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px var(--green);
+      filter: saturate(1.2);
+    }
+
+    /* Fake loading bar */
+    .loader-info {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 5px;
+      color: var(--red);
+      font-size: .68rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .progress-track {
+      height: 22px;
+      overflow: hidden;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      background: #3a2a1c;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6);
+    }
+
+    #progressFill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--green) 0%, var(--red) 62%, var(--gold) 100%);
+      transition: width .2s ease;
+    }
+
+    .status {
+      min-height: 1.4em;
+      margin: 10px 0 0;
+      color: var(--green);
+      font-size: .85rem;
+      font-style: italic;
+    }
+
+    /* Result: just the QR code */
+    .state-result #pageHeader { display: none; }
+    .state-result .panel { padding: clamp(16px, 4vw, 28px); }
+
+    .qr-box {
+      display: inline-block;
+      padding: 12px;
+      border: 1px solid var(--gold);
+      background: #fff;
+      box-shadow:
+        0 0 0 5px #fffdf6,
+        0 0 0 6px var(--green),
+        0 12px 26px rgba(0, 0, 0, .3);
+      animation: fadeSlideIn .7s ease both;
+    }
+
+    .qr-box img {
+      display: block;
+      width: min(250px, 62vw, 36vh);
+      height: min(250px, 62vw, 36vh);
+    }
+
+    @keyframes backgroundShift {
+      from { background-position: 0 0, 0 0, 0 0; }
+      to { background-position: 32px 48px, 0 0, 0 0; }
+    }
+    @keyframes snowfall {
+      to { transform: translate3d(var(--drift), 115vh, 0) rotate(360deg); }
+    }
+    @keyframes decorBob {
+      from { transform: translateY(0) rotate(-5deg); }
+      to { transform: translateY(-12px) rotate(5deg); }
+    }
+    @keyframes bulbGlow {
+      from { opacity: .55; filter: brightness(.8); }
+      to { opacity: 1; filter: brightness(1.2); }
+    }
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .68; }
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 430px) {
+      .kicker { letter-spacing: .06em; }
+      .filmstrip img { width: 28px; height: 38px; }
+      .decor { font-size: 1.7rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      .snow { display: none; }
+    }
+  </style>
+  <script src="js/index.js" defer></script>
+</head>
+<body>
+  <div class="snow" id="snow" aria-hidden="true"></div>
+  <div class="decorations" id="decorations" aria-hidden="true"></div>
+  <div class="light-strand top" id="lightsTop" aria-hidden="true"></div>
+  <div class="light-strand bottom" id="lightsBottom" aria-hidden="true"></div>
+
+  <main class="wrapper">
+    <section class="panel">
+      <header id="pageHeader">
+        <p class="kicker">Christmas Music</p>
+        <div class="ornament" aria-hidden="true"><span>✦</span> A song for each day of Advent <span>✦</span></div>
+        <h1 id="date" aria-live="polite">Today is...</h1>
+      </header>
+
+      <p class="unavailable" id="unavailable" hidden>The music begins on 1st December. See you then! ❄</p>
+
+      <div id="loadingArea">
+        <div class="roulette">
+          <span class="badge">Loading</span>
+          <div class="reel-window">
+            <img id="rouletteImage" class="front" src="img/IMG_4859.jpg" alt="Festive image in the loading roulette">
+            <img id="rouletteImageNext" alt="" aria-hidden="true">
+          </div>
+        </div>
+
+        <div class="filmstrip" id="filmstrip" aria-label="Festive images used in the loading roulette"></div>
+
+        <div class="loader-info">
+          <span>Loading today's track...</span>
+          <span id="progressText">0%</span>
+        </div>
+        <div class="progress-track" id="progressTrack" role="progressbar" aria-label="Loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="progressFill"></div>
+        </div>
+        <p class="status" id="status" aria-live="polite">Hanging the garland...</p>
+      </div>
+
+      <section id="resultArea" aria-live="polite" hidden>
+        <div class="qr-box">
+          <img id="qrImage" alt="QR code linking to today's Spotify track">
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
